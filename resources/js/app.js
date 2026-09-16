@@ -13,6 +13,12 @@ const track = (event, metadata = {}) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.store-brand-logo').forEach((logo) => {
+        const showName = () => logo.replaceWith(document.createTextNode(logo.alt));
+        logo.addEventListener('error', showName, {once: true});
+        if (logo.complete && logo.naturalWidth === 0) showName();
+    });
+
     document.querySelectorAll('[data-category-slider]').forEach((slider) => {
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         let interacting = false;

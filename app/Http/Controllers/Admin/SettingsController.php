@@ -52,7 +52,7 @@ class SettingsController extends Controller
     {
         $content = $request->validated('content');
         foreach ($request->file('uploads', []) as $key => $image) {
-            $content[$key] = Storage::disk('public')->url($image->store('site-content', 'public'));
+            $content[$key] = '/storage/'.$image->store('site-content', 'public');
         }
 
         DB::transaction(function () use ($page, $section, $content): void {

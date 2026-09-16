@@ -14,9 +14,22 @@ class SiteContent
         $definition = config("site_content.$page.$section.$field", []);
         $setting = $definition['general_setting'] ?? null;
 
-        return $this->values[$page][$section][$field]
+        $value = $this->values[$page][$section][$field]
             ?? ($setting ? $this->settings?->getAttribute($setting) : null)
             ?? ($definition['default'] ?? '');
+
+        if (($definition['type'] ?? null) === 'image') {
+            $host = parse_url($value, PHP_URL_HOST);
+            $path = parse_url($value, PHP_URL_PATH);
+
+            if (in_array($host, ['localhost', '127.0.0.1'], true)
+                && is_string($path)
+                && str_starts_with($path, '/storage/site-content/')) {
+                return $path;
+            }
+        }
+
+        return $value;
     }
 
     /** @return array<string, string> */

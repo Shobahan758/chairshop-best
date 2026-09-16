@@ -55,6 +55,7 @@ class SiteContentTest extends TestCase
             ])->assertSessionHasNoErrors()->assertRedirect();
 
             $logo = GeneralSetting::first()->site_content['shared'][$section]['logo'];
+            $this->assertStringStartsWith('/storage/site-content/', $logo);
             Storage::disk('public')->assertExists('site-content/'.basename($logo));
             $this->get(route('home'))->assertSee($logo, false);
 
@@ -62,6 +63,17 @@ class SiteContentTest extends TestCase
                 ->assertSessionHasNoErrors()->assertRedirect();
             $this->get(route('home'))->assertDontSee($logo, false)->assertSee($content['field_1']);
         }
+    }
+
+    public function test_saved_localhost_logo_url_uses_the_current_site(): void
+    {
+        GeneralSetting::create(['site_content' => ['shared' => ['header' => [
+            'logo' => 'http://localhost:8000/storage/site-content/logo.png',
+        ]]]]);
+
+        $this->get(route('home'))
+            ->assertSee('src="/storage/site-content/logo.png"', false)
+            ->assertDontSee('http://localhost:8000/storage/site-content/logo.png', false);
     }
 
     public function test_site_menu_links_open_the_selected_content_editor(): void
