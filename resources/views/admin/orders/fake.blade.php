@@ -1,0 +1,9 @@
+@extends('layouts.admin')
+@section('title', ($today ? "Today's" : 'All').' Fake Orders — ChairGhor Admin')
+@section('content')
+<div class="admin-page-heading"><div><span>ORDER MANAGEMENT</span><h1>{{ $today ? "Today's" : 'All' }} Fake Orders</h1><p>Review and manage orders marked as fake.</p></div><div class="d-flex align-items-center gap-3"><b>Total: {{ $orders->total() }}</b><a class="btn btn-admin-primary" href="{{ route('admin.fake-orders.create') }}"><i class="bi bi-plus-lg"></i> Create Order</a></div></div>
+<section class="admin-panel"><div class="table-responsive"><table class="table admin-orders-table align-middle"><thead><tr><th>Order</th><th>Customer</th><th>Product</th><th>Phone</th><th>Email</th><th>Address</th><th>Quantity</th><th>Total</th><th>Risk score</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody>
+@forelse($orders as $order)<tr><td>{{ $order->order_number }}</td><td>{{ $order->name }}</td><td>{{ $order->items->pluck('product_name')->join(', ') }}</td><td>{{ $order->phone }}</td><td>{{ $order->email ?: '—' }}</td><td>{{ $order->address }}, {{ $order->area }}, {{ $order->district }}</td><td>{{ $order->items->sum('quantity') }}</td><td>৳{{ number_format((float) $order->total) }}</td><td>@include('admin.orders.risk')</td><td>{{ $order->status }}</td><td>{{ $order->created_at->format('d M Y') }}</td><td><form method="post" action="{{ route('admin.fake-orders.destroy', $order) }}" onsubmit="return confirm('Delete this fake order?')">@csrf @method('DELETE')<button class="category-action delete" title="Delete"><i class="bi bi-trash3"></i></button></form></td></tr>
+@empty<tr><td colspan="12"><div class="category-empty"><i class="bi bi-folder2-open"></i><b>No orders found in this list.</b></div></td></tr>@endforelse
+</tbody></table></div></section>{{ $orders->links() }}
+@endsection

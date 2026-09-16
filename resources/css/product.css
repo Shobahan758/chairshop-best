@@ -1,0 +1,42 @@
+.product-quantity-stepper {
+    display: grid;
+    grid-template-columns: 42px 62px 42px;
+    overflow: hidden;
+    border: 1px solid #d5dfda;
+    border-radius: 9px;
+    background: #fff;
+}
+
+.product-quantity-stepper button {
+    border: 0;
+    background: #eef4f1;
+    color: var(--green);
+    font-size: 18px;
+}
+
+.product-quantity-stepper button:hover:not(:disabled) {
+    background: var(--green);
+    color: #fff;
+}
+
+.product-quantity-stepper button:disabled {
+    cursor: not-allowed;
+    opacity: .4;
+}
+
+.product-buy-form .product-quantity-stepper input {
+    width: 62px;
+    min-height: 50px;
+    padding: 8px;
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    box-shadow: none;
+    appearance: textfield;
+}
+
+.product-quantity-stepper input::-webkit-outer-spin-button,
+.product-quantity-stepper input::-webkit-inner-spin-button {
+    margin: 0;
+    appearance: none;
+}

@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Keep Laravel's public directory out of browser URLs.
+    RewriteCond %{THE_REQUEST} \s/+(?:[^/]+/)*public/ [NC]
+    RewriteRule ^public/(.+)$ $1 [R=301,L,NE]
+    RewriteCond %{THE_REQUEST} \s/+(?:[^/]+/)*public(?:[/?\s]) [NC]
+    RewriteRule ^public/?$ ./ [R=301,L,NE]
+
+    # Serve the Laravel application when this project directory is the web root.
+    RewriteRule ^public(?:/|$) - [L]
+    RewriteRule ^$ public/index.php [L]
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
