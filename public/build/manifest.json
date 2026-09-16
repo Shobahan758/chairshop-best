@@ -1,0 +1,78 @@
+{
+  "_fonts-C9MNnjVw.css": {
+    "file": "assets/fonts-C9MNnjVw.css",
+    "src": "_fonts-C9MNnjVw.css"
+  },
+  "_instrument-sans-400-normal-D1W7dsQl.woff": {
+    "file": "assets/instrument-sans-400-normal-D1W7dsQl.woff",
+    "src": "_instrument-sans-400-normal-D1W7dsQl.woff"
+  },
+  "_instrument-sans-400-normal-DRC__1Mx.woff2": {
+    "file": "assets/instrument-sans-400-normal-DRC__1Mx.woff2",
+    "src": "_instrument-sans-400-normal-DRC__1Mx.woff2"
+  },
+  "_instrument-sans-500-normal-Dk9ku72i.woff2": {
+    "file": "assets/instrument-sans-500-normal-Dk9ku72i.woff2",
+    "src": "_instrument-sans-500-normal-Dk9ku72i.woff2"
+  },
+  "_instrument-sans-500-normal-Z6ESRlEs.woff": {
+    "file": "assets/instrument-sans-500-normal-Z6ESRlEs.woff",
+    "src": "_instrument-sans-500-normal-Z6ESRlEs.woff"
+  },
+  "_instrument-sans-600-normal-B7fBEWYG.woff2": {
+    "file": "assets/instrument-sans-600-normal-B7fBEWYG.woff2",
+    "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
+  },
+  "_instrument-sans-600-normal-B9e8oLYv.woff": {
+    "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
+    "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
+  },
+  "resources/css/admin.css": {
+    "file": "assets/admin-DRKWQPx0.css",
+    "name": "admin",
+    "names": [
+      "admin.css"
+    ],
+    "src": "resources/css/admin.css",
+    "isEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-D8zpHJe5.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/product.css": {
+    "file": "assets/product-DnKX-Ugz.css",
+    "name": "product",
+    "names": [
+      "product.css"
+    ],
+    "src": "resources/css/product.css",
+    "isEntry": true
+  },
+  "resources/css/tracking.css": {
+    "file": "assets/tracking-DN37OlGu.css",
+    "name": "tracking",
+    "names": [
+      "tracking.css"
+    ],
+    "src": "resources/css/tracking.css",
+    "isEntry": true
+  },
+  "resources/js/admin.js": {
+    "file": "assets/admin-CGgjiAMD.js",
+    "name": "admin",
+    "src": "resources/js/admin.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C8HuGHkz.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
