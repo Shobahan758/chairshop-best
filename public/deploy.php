@@ -88,7 +88,8 @@ if (function_exists('putenv')) {
 
 foreach ([
     ['git', 'pull', '--ff-only', 'origin', 'master'],
-    ['php', 'artisan', 'optimize:clear'],
+    ['php', 'artisan', 'optimize:clear', '--no-interaction'],
+    ['php', 'artisan', 'view:cache', '--no-interaction'],
 ] as $command) {
     $logPath = $projectPath.'/storage/logs/deploy.log';
     $process = @proc_open($command, [

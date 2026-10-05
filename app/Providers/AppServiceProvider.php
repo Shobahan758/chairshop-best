@@ -23,13 +23,19 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         View::composer(['home', 'layouts.app', 'contact', 'track', 'cart', 'checkout', 'success', 'dashboard', 'auth.login', 'shop', 'product', 'order-invoice', 'page'], function ($view): void {
-            $settings = Schema::hasTable('general_settings') ? GeneralSetting::first() : null;
-            $view->with('siteContent', new SiteContent($settings?->site_content ?? [], $settings));
+            $siteContent = request()->attributes->get('storefront.siteContent');
+
+            if (! $siteContent instanceof SiteContent) {
+                $settings = Schema::hasTable('general_settings') ? GeneralSetting::first() : null;
+                $siteContent = new SiteContent($settings?->site_content ?? [], $settings);
+                request()->attributes->set('storefront.siteContent', $siteContent);
+            }
+
+            $view->with('siteContent', $siteContent);
         });
 
         View::composer('layouts.app', function ($view): void {
             $view->with('trackingSettings', Schema::hasTable('tracking_settings') ? TrackingSetting::first() : null);
-            $view->with('footerSettings', Schema::hasTable('general_settings') ? GeneralSetting::first() : null);
         });
     }
 

@@ -13,6 +13,16 @@ const track = (event, metadata = {}) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-product-image]').forEach((image) => {
+        const showPlaceholder = () => {
+            if (image.getAttribute('src') !== image.dataset.imageFallback) {
+                image.src = image.dataset.imageFallback;
+            }
+        };
+        image.addEventListener('error', showPlaceholder);
+        if (image.complete && image.naturalWidth === 0) showPlaceholder();
+    });
+
     document.querySelectorAll('.store-brand-logo').forEach((logo) => {
         const showName = () => logo.replaceWith(document.createTextNode(logo.alt));
         logo.addEventListener('error', showName, {once: true});

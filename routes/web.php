@@ -16,9 +16,12 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerAccountController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductReviewController;
+use App\Http\Controllers\PublicImageController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TrackingEventController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/storage/{path}', PublicImageController::class)->where('path', '.*')->name('storage.image');
 
 Route::get('/', [StoreController::class, 'home'])->name('home');
 Route::get('/shop', [StoreController::class, 'shop'])->name('shop');
