@@ -29,6 +29,7 @@
 <th>Parent Category</th>
 <th>Slug</th>
 <th>Created</th>
+<th class="text-end">Actions</th>
 </tr>
 </thead>
 <tbody>@forelse($subcategories as $subcategory)<tr>
@@ -46,8 +47,12 @@
 <code>{{$subcategory->slug}}</code>
 </td>
 <td>{{$subcategory->created_at->format('d M, Y')}}</td>
+<td><div class="category-actions">
+<button class="category-action edit" type="button" data-bs-toggle="modal" data-bs-target="#editSubcategoryModal{{ $subcategory->id }}" aria-label="Edit {{ $subcategory->name }}" title="Edit"><i class="bi bi-pencil"></i></button>
+<form method="post" action="{{ route('admin.subcategories.destroy', $subcategory) }}" onsubmit="return confirm('Delete this subcategory? This action cannot be undone.')">@csrf @method('DELETE')<button class="category-action delete" type="submit" aria-label="Delete {{ $subcategory->name }}" title="Delete"><i class="bi bi-trash3"></i></button></form>
+</div></td>
 </tr>@empty<tr>
-<td colspan="4">
+<td colspan="5">
 <div class="category-empty">
 <i class="bi bi-diagram-2">
 </i>
@@ -95,4 +100,18 @@
 </div>
 </div>
 </div>
+@foreach($subcategories as $subcategory)
+<div class="modal fade" id="editSubcategoryModal{{ $subcategory->id }}" tabindex="-1" aria-labelledby="editSubcategoryLabel{{ $subcategory->id }}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content admin-modal">
+<div class="modal-header"><h2 class="modal-title" id="editSubcategoryLabel{{ $subcategory->id }}">Edit Subcategory</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+<form method="post" action="{{ route('admin.subcategories.update', $subcategory) }}">@csrf @method('PUT')<input type="hidden" name="_editing_id" value="{{ $subcategory->id }}"><div class="modal-body">
+@if(old('_editing_id') == $subcategory->id && $errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>@endif
+<div class="mb-3"><label class="form-label" for="editParent{{ $subcategory->id }}">Parent Category</label><select class="form-select" id="editParent{{ $subcategory->id }}" name="category_id" required>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((old('_editing_id') == $subcategory->id ? old('category_id') : $subcategory->category_id) == $category->id)>{{ $category->name }}</option>@endforeach</select></div><div class="mb-3"><label class="form-label" for="editSubcategoryname{{ $subcategory->id }}">Name</label><input class="form-control" id="editSubcategoryname{{ $subcategory->id }}" name="name" type="text" value="{{ old('_editing_id') == $subcategory->id ? old('name') : $subcategory->name }}" required></div><div class="mb-3"><label class="form-label" for="editSubcategoryslug{{ $subcategory->id }}">Slug</label><input class="form-control" id="editSubcategoryslug{{ $subcategory->id }}" name="slug" type="text" value="{{ old('_editing_id') == $subcategory->id ? old('slug') : $subcategory->slug }}"></div>
+</div><div class="modal-footer"><button type="button" class="btn btn-admin-light" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-admin-primary">Save Changes</button></div></form>
+</div></div></div>
+@endforeach
+@if(old('_editing_id'))
+@push('scripts')
+<script>document.addEventListener('DOMContentLoaded', () => { const modal = document.getElementById('editSubcategoryModal' + @json((string) old('_editing_id'))); if (modal) new bootstrap.Modal(modal).show(); });</script>
+@endpush
+@endif
 @endsection

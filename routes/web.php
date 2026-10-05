@@ -74,8 +74,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/categories/{category}', [CategoryController::class, 'destroy'])->name('admin.categories.destroy');
         Route::get('/admin/subcategories', [SubcategoryController::class, 'index'])->name('admin.subcategories.index');
         Route::post('/admin/subcategories', [SubcategoryController::class, 'store'])->name('admin.subcategories.store');
+        Route::put('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'update'])->name('admin.subcategories.update');
+        Route::delete('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'destroy'])->name('admin.subcategories.destroy');
         Route::get('/admin/brands', [BrandController::class, 'index'])->name('admin.brands.index');
         Route::post('/admin/brands', [BrandController::class, 'store'])->name('admin.brands.store');
+        Route::put('/admin/brands/{brand}', [BrandController::class, 'update'])->name('admin.brands.update');
+        Route::delete('/admin/brands/{brand}', [BrandController::class, 'destroy'])->name('admin.brands.destroy');
         Route::get('/admin/products', [ProductController::class, 'index'])->name('admin.products.index');
         Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
         Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');

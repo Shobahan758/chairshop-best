@@ -29,6 +29,7 @@
 <th>Slug</th>
 <th>Logo</th>
 <th>Created</th>
+<th class="text-end">Actions</th>
 </tr>
 </thead>
 <tbody>@forelse($brands as $brand)<tr>
@@ -46,8 +47,12 @@
 </td>
 <td>@if($brand->logo)<a class="panel-link" href="{{$brand->logo}}" target="_blank" rel="noopener">View logo</a>@else<span class="text-muted">—</span>@endif</td>
 <td>{{$brand->created_at->format('d M, Y')}}</td>
+<td><div class="category-actions">
+<button class="category-action edit" type="button" data-bs-toggle="modal" data-bs-target="#editBrandModal{{ $brand->id }}" aria-label="Edit {{ $brand->name }}" title="Edit"><i class="bi bi-pencil"></i></button>
+<form method="post" action="{{ route('admin.brands.destroy', $brand) }}" onsubmit="return confirm('Delete this brand? This action cannot be undone.')">@csrf @method('DELETE')<button class="category-action delete" type="submit" aria-label="Delete {{ $brand->name }}" title="Delete"><i class="bi bi-trash3"></i></button></form>
+</div></td>
 </tr>@empty<tr>
-<td colspan="4">
+<td colspan="5">
 <div class="category-empty">
 <i class="bi bi-patch-check">
 </i>
@@ -93,4 +98,18 @@
 </div>
 </div>
 </div>
+@foreach($brands as $brand)
+<div class="modal fade" id="editBrandModal{{ $brand->id }}" tabindex="-1" aria-labelledby="editBrandLabel{{ $brand->id }}" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content admin-modal">
+<div class="modal-header"><h2 class="modal-title" id="editBrandLabel{{ $brand->id }}">Edit Brand</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+<form method="post" action="{{ route('admin.brands.update', $brand) }}">@csrf @method('PUT')<input type="hidden" name="_editing_id" value="{{ $brand->id }}"><div class="modal-body">
+@if(old('_editing_id') == $brand->id && $errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $message)<li>{{ $message }}</li>@endforeach</ul></div>@endif
+<div class="mb-3"><label class="form-label" for="editBrandname{{ $brand->id }}">Name</label><input class="form-control" id="editBrandname{{ $brand->id }}" name="name" type="text" value="{{ old('_editing_id') == $brand->id ? old('name') : $brand->name }}" required></div><div class="mb-3"><label class="form-label" for="editBrandslug{{ $brand->id }}">Slug</label><input class="form-control" id="editBrandslug{{ $brand->id }}" name="slug" type="text" value="{{ old('_editing_id') == $brand->id ? old('slug') : $brand->slug }}"></div><div class="mb-3"><label class="form-label" for="editBrandlogo{{ $brand->id }}">Logo URL</label><input class="form-control" id="editBrandlogo{{ $brand->id }}" name="logo" type="url" value="{{ old('_editing_id') == $brand->id ? old('logo') : $brand->logo }}"></div>
+</div><div class="modal-footer"><button type="button" class="btn btn-admin-light" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-admin-primary">Save Changes</button></div></form>
+</div></div></div>
+@endforeach
+@if(old('_editing_id'))
+@push('scripts')
+<script>document.addEventListener('DOMContentLoaded', () => { const modal = document.getElementById('editBrandModal' + @json((string) old('_editing_id'))); if (modal) new bootstrap.Modal(modal).show(); });</script>
+@endpush
+@endif
 @endsection
