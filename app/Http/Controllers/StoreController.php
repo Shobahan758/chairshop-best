@@ -24,6 +24,12 @@ class StoreController extends Controller
 
     public function shop(Request $r)
     {
+        $r->validate([
+            'q' => ['nullable', 'string', 'max:255'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'sort' => ['nullable', 'string', 'in:low,high,newest'],
+        ]);
+
         $q = Product::with('category')->where('is_active', true)->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('is_active', true));
         if ($r->filled('q')) {
             $q->where('name', 'like', '%'.$r->q.'%');
@@ -46,7 +52,7 @@ class StoreController extends Controller
 
         return view('product', [
             'product' => $product->load(['category', 'reviews' => fn ($query) => $query->latest()])->loadAvg('reviews', 'rating'),
-            'related' => Product::where('is_active', true)->where('category_id', $product->category_id)->whereKeyNot($product->id)->take(4)->get(),
+            'related' => Product::with('category')->where('is_active', true)->where('category_id', $product->category_id)->whereKeyNot($product->id)->take(4)->get(),
         ]);
     }
 

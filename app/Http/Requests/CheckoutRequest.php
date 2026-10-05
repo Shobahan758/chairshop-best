@@ -22,7 +22,7 @@ class CheckoutRequest extends FormRequest
      */
     public function rules(): array
     {
-        return ['name' => 'required|string|max:100', 'phone' => ['required', 'regex:/^01[3-9][0-9]{8}$/'], 'email' => 'nullable|email', 'district' => 'required|string|max:100', 'area' => 'required|string', 'address' => 'required|string|min:10', 'payment_method' => 'required|in:cod,bkash,nagad', 'payment_phone' => ['exclude_if:payment_method,cod', 'required', 'regex:/^01[3-9][0-9]{8}$/'], 'transaction_id' => ['exclude_if:payment_method,cod', 'required', 'string', 'regex:/^[A-Za-z0-9-]+$/', 'max:100']];
+        return ['name' => 'required|string|max:100', 'phone' => ['required', 'regex:/^01[3-9][0-9]{8}$/'], 'email' => 'nullable|email|max:255', 'district' => 'required|string|max:100', 'area' => 'required|string|max:255', 'address' => 'required|string|min:10|max:5000', 'payment_method' => 'required|in:cod,bkash,nagad', 'payment_phone' => ['exclude_if:payment_method,cod', 'required', 'regex:/^01[3-9][0-9]{8}$/'], 'transaction_id' => ['exclude_if:payment_method,cod', 'required', 'string', 'regex:/^[A-Za-z0-9-]+$/', 'max:100']];
     }
 
     public function messages(): array

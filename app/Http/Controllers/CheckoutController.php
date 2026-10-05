@@ -97,7 +97,7 @@ class CheckoutController extends Controller
 
         $account = $accounts->resolve($request);
         $order = Cache::lock('checkout-order-risk', 30)->block(10, fn (): Order => DB::transaction(function () use ($request, $cart, $account, $riskScorer): Order {
-            $products = Product::query()->where('is_active', true)->whereIn('id', array_keys($cart))->lockForUpdate()->get()->keyBy('id');
+            $products = Product::query()->where('is_active', true)->whereHas('category', fn ($query) => $query->where('is_active', true))->whereIn('id', array_keys($cart))->lockForUpdate()->get()->keyBy('id');
             $subtotal = 0.0;
 
             foreach ($cart as $row) {
@@ -163,8 +163,13 @@ class CheckoutController extends Controller
         return redirect()->route('dashboard')->with('success', 'আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
     }
 
-    public function success(Order $order): View
+    public function success(Request $request, Order $order, CustomerAccounts $accounts): View
     {
+        abort_if($order->is_fake, 404);
+        abort_unless($request->user() || $accounts->current($request) || $request->session()->get('customer_order_ids', []), 404);
+        $account = $accounts->resolve($request);
+        abort_unless($accounts->orders($request, $account)->whereKey($order->id)->exists(), 404);
+
         return view('success', compact('order'));
     }
 

@@ -32,10 +32,11 @@ class CartController extends Controller
 
     public function add(Request $request, Product $product, StorefrontTracker $tracker): RedirectResponse
     {
-        abort_if(! $product->is_active || $product->stock < 1, 422, 'পণ্যটি পাওয়া যাচ্ছে না');
+        abort_if(! $product->is_active || ! $product->category?->is_active || $product->stock < 1, 422, 'পণ্যটি পাওয়া যাচ্ছে না');
+        $validated = $request->validate(['quantity' => ['sometimes', 'required', 'integer', 'min:1']]);
         $cart = session('cart', []);
         $previousQuantity = $cart[$product->id]['quantity'] ?? 0;
-        $quantity = max(1, min((int) $request->input('quantity', 1), $product->stock));
+        $quantity = max(1, min((int) ($validated['quantity'] ?? 1), $product->stock));
         $cart[$product->id] = ['id' => $product->id, 'name' => $product->name, 'slug' => $product->slug, 'image' => $product->image, 'price' => (float) $product->current_price, 'quantity' => min(($cart[$product->id]['quantity'] ?? 0) + $quantity, $product->stock)];
         session(['cart' => $cart]);
         $tracker->record($request, 'add_to_cart', ['product_id' => $product->id, 'quantity' => $cart[$product->id]['quantity'] - $previousQuantity, 'value' => ($cart[$product->id]['quantity'] - $previousQuantity) * (float) $product->current_price]);
@@ -45,7 +46,8 @@ class CartController extends Controller
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        abort_if(! $product->is_active || $product->stock < 1, 422, 'পণ্যটি পাওয়া যাচ্ছে না');
+        abort_if(! $product->is_active || ! $product->category?->is_active || $product->stock < 1, 422, 'পণ্যটি পাওয়া যাচ্ছে না');
+        $request->validate(['quantity' => ['required', 'integer', 'min:1']]);
         $cart = session('cart', []);
         if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity'] = max(1, min($request->integer('quantity'), $product->stock));

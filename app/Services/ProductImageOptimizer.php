@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class ProductImageOptimizer
@@ -15,6 +16,10 @@ class ProductImageOptimizer
 
     public function store(UploadedFile $file): string
     {
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagewebp')) {
+            throw ValidationException::withMessages(['image' => 'ছবি আপলোডের জন্য সার্ভারে PHP GD ও WebP support চালু করতে হবে।']);
+        }
+
         $source = imagecreatefromstring($file->getContent());
 
         if ($source === false) {

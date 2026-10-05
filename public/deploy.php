@@ -88,6 +88,7 @@ if (function_exists('putenv')) {
 
 foreach ([
     ['git', 'pull', '--ff-only', 'origin', 'master'],
+    ['composer', 'install', '--no-dev', '--prefer-dist', '--no-interaction', '--optimize-autoloader', '--no-progress'],
     ['php', 'artisan', 'optimize:clear', '--no-interaction'],
     ['php', 'artisan', 'view:cache', '--no-interaction'],
 ] as $command) {

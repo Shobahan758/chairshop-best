@@ -14,6 +14,7 @@ use App\Services\ProductSkuGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -46,18 +47,31 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request, ProductImageOptimizer $imageOptimizer, ProductSkuGenerator $skuGenerator): RedirectResponse
     {
         $attributes = $request->safe()->except(['discount_percentage', 'additional_images']);
-        $attributes['image'] = $imageOptimizer->store($request->file('image'));
-        $attributes['additional_images'] = collect($request->file('additional_images', []))
-            ->map(fn ($image): string => $imageOptimizer->store($image))
-            ->values()
-            ->all();
+        $newImages = [];
 
-        $attributes['sku'] = $skuGenerator->generate(
-            Category::findOrFail($attributes['category_id']),
-            isset($attributes['subcategory_id']) ? Subcategory::findOrFail($attributes['subcategory_id']) : null,
-        );
+        try {
+            $attributes['image'] = $imageOptimizer->store($request->file('image'));
+            $newImages[] = $attributes['image'];
+            $attributes['additional_images'] = [];
+            foreach ($request->file('additional_images', []) as $image) {
+                $newImage = $imageOptimizer->store($image);
+                $newImages[] = $newImage;
+                $attributes['additional_images'][] = $newImage;
+            }
 
-        Product::create($attributes);
+            $attributes['sku'] = $skuGenerator->generate(
+                Category::findOrFail($attributes['category_id']),
+                isset($attributes['subcategory_id']) ? Subcategory::findOrFail($attributes['subcategory_id']) : null,
+            );
+
+            Product::create($attributes);
+        } catch (Throwable $exception) {
+            foreach ($newImages as $image) {
+                $imageOptimizer->delete($image);
+            }
+
+            throw $exception;
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Product added successfully.');
     }
@@ -76,25 +90,43 @@ class ProductController extends Controller
     {
         $attributes = $request->safe()->except(['discount_percentage', 'additional_images', 'image']);
 
-        if ($request->hasFile('image')) {
-            $imageOptimizer->delete($product->image);
-            $attributes['image'] = $imageOptimizer->store($request->file('image'));
-        }
+        $newImages = [];
+        $replacedImages = [];
 
-        $additionalImages = collect($request->file('additional_images', []))->filter();
-        if ($additionalImages->isNotEmpty()) {
-            $images = $product->additional_images ?? [];
-            foreach ($additionalImages as $index => $image) {
-                if (isset($images[$index])) {
-                    $imageOptimizer->delete($images[$index]);
-                }
-                $images[$index] = $imageOptimizer->store($image);
+        try {
+            if ($request->hasFile('image')) {
+                $attributes['image'] = $imageOptimizer->store($request->file('image'));
+                $newImages[] = $attributes['image'];
+                $replacedImages[] = $product->image;
             }
-            ksort($images);
-            $attributes['additional_images'] = array_values($images);
+
+            $additionalImages = collect($request->file('additional_images', []))->filter();
+            if ($additionalImages->isNotEmpty()) {
+                $images = $product->additional_images ?? [];
+                foreach ($additionalImages as $index => $image) {
+                    $newImage = $imageOptimizer->store($image);
+                    $newImages[] = $newImage;
+                    if (isset($images[$index])) {
+                        $replacedImages[] = $images[$index];
+                    }
+                    $images[$index] = $newImage;
+                }
+                ksort($images);
+                $attributes['additional_images'] = array_values($images);
+            }
+
+            $product->update($attributes);
+        } catch (Throwable $exception) {
+            foreach ($newImages as $image) {
+                $imageOptimizer->delete($image);
+            }
+
+            throw $exception;
         }
 
-        $product->update($attributes);
+        foreach ($replacedImages as $image) {
+            $imageOptimizer->delete($image);
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }

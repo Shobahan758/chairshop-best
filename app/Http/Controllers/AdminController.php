@@ -33,6 +33,8 @@ class AdminController extends Controller
 
     public function update(Request $request, Order $order): RedirectResponse
     {
+        abort_if($order->is_fake, 404);
+
         $validated = $request->validate(['status' => 'required|in:অর্ডার গ্রহণ,নিশ্চিত,প্রস্তুত,পাঠানো,ডেলিভারি সম্পন্ন,বাতিল']);
         $order->update(['status' => $validated['status']]);
 

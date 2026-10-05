@@ -41,9 +41,9 @@ class Product extends Model
         return $this->belongsTo(Brand::class);
     }
 
-    public function getCurrentPriceAttribute()
+    public function getCurrentPriceAttribute(): string
     {
-        return $this->sale_price ?: $this->price;
+        return $this->sale_price ?? $this->price;
     }
 
     public function reviews(): HasMany

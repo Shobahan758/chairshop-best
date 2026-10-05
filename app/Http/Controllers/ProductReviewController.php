@@ -10,6 +10,8 @@ class ProductReviewController extends Controller
 {
     public function store(StoreProductReviewRequest $request, Product $product): RedirectResponse
     {
+        abort_unless($product->is_active && $product->category?->is_active, 404);
+
         $imagePath = $request->file('image')?->store('reviews', 'public');
 
         $product->reviews()->create([
